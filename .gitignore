@@ -1,0 +1,23 @@
+# Node modules
+node_modules/
+server/node_modules/
+
+# Production builds
+dist/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+server/.env
+
+# IDE and system files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+Thumbs.db

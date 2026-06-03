@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html, body {
+  background-color: #FAF9F6 !important;
+  color: #1E293B !important;
+}
+
+@layer base {
+  body {
+    font-family: 'Outfit', sans-serif;
+    @apply bg-background text-slate-800 antialiased;
+  }
+}
+
+/* Custom glassmorphism utility replacement for Warm Light Theme */
+@layer utilities {
+  .glass {
+    @apply bg-white border border-glassBorder shadow-glass rounded-2xl;
+  }
+}
