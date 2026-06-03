@@ -8,7 +8,7 @@ const analyticsSchema = new mongoose.Schema({
   },
   browser: {
     type: String,
-    default: 'Unknown',
+    default: 'Other',
   },
   device: {
     type: String,

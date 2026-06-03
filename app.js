@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Routes
-app.use('/api', requireDatabaseConnection);
+app.use(requireDatabaseConnection);
 app.use('/api/auth', authRoutes);
 app.use('/api/url', urlRoutes);
 app.use('/api/url', qrCodeRoutes);

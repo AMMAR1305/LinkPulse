@@ -38,6 +38,13 @@ const getDashboardStats = async (userId) => {
     expiredUrls: 0,
   };
 
+  // Add disabledUrls count
+  const disabledCount = await Url.countDocuments({
+    userId: userObjectId,
+    status: 'disabled',
+  });
+  totals.disabledUrls = disabledCount;
+
   const topUrlResult = await Url.aggregate([
     {
       $match: {
@@ -156,15 +163,80 @@ const getDashboardStats = async (userId) => {
     };
   });
 
+  // Device, Browser, OS stats aggregation
+  const deviceStatsResult = await Analytics.aggregate([
+    {
+      $lookup: {
+        from: 'urls',
+        localField: 'urlId',
+        foreignField: '_id',
+        as: 'url',
+      },
+    },
+    { $unwind: '$url' },
+    { $match: { 'url.userId': userObjectId } },
+    { $group: { _id: '$device', count: { $sum: 1 } } },
+  ]);
+
+  const browserStatsResult = await Analytics.aggregate([
+    {
+      $lookup: {
+        from: 'urls',
+        localField: 'urlId',
+        foreignField: '_id',
+        as: 'url',
+      },
+    },
+    { $unwind: '$url' },
+    { $match: { 'url.userId': userObjectId } },
+    { $group: { _id: '$browser', count: { $sum: 1 } } },
+  ]);
+
+  const osStatsResult = await Analytics.aggregate([
+    {
+      $lookup: {
+        from: 'urls',
+        localField: 'urlId',
+        foreignField: '_id',
+        as: 'url',
+      },
+    },
+    { $unwind: '$url' },
+    { $match: { 'url.userId': userObjectId } },
+    { $group: { _id: '$os', count: { $sum: 1 } } },
+  ]);
+
+  const deviceStats = deviceStatsResult.reduce((acc, item) => {
+    const key = (item._id || 'Unknown').toString();
+    acc[key] = item.count;
+    return acc;
+  }, {});
+
+  const browserStats = browserStatsResult.reduce((acc, item) => {
+    const key = (item._id || 'Unknown').toString();
+    acc[key] = item.count;
+    return acc;
+  }, {});
+
+  const osStats = osStatsResult.reduce((acc, item) => {
+    const key = (item._id || 'Unknown').toString();
+    acc[key] = item.count;
+    return acc;
+  }, {});
+
   return {
     totalUrls: totals.totalUrls || 0,
     totalClicks: totals.totalClicks || 0,
     activeUrls: totals.activeUrls || 0,
     expiredUrls: totals.expiredUrls || 0,
+    disabledUrls: totals.disabledUrls || 0,
     todayClicks: todayClicksResult[0]?.clicks || 0,
     topUrl: topUrlResult[0] || null,
     recentUrls,
     clicksByDay,
+    deviceStats,
+    browserStats,
+    osStats,
   };
 };
 

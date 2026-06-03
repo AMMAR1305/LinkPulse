@@ -29,6 +29,8 @@ const connectDB = async () => {
     try {
       const conn = await mongoose.connect(target.uri, {
         serverSelectionTimeoutMS: 10000,
+        socketTimeoutMS: 45000,
+        family: 4,
       });
       console.log(
         `MongoDB Connected: host=${conn.connection.host} db=${conn.connection.name} source=${target.label}`
@@ -52,10 +54,6 @@ const connectDB = async () => {
 // Handle connection events
 mongoose.connection.on('error', (error) => {
   console.error(`MongoDB connection error: ${error.message}`);
-});
-
-mongoose.connection.on('disconnected', () => {
-  console.log('MongoDB disconnected');
 });
 
 // Graceful shutdown

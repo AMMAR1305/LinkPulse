@@ -71,23 +71,64 @@ const deleteUrl = async (urlId, userId) => {
   await url.deleteOne();
 };
 
-const getUrlByCode = async (shortCode) => {
-  // Find by shortCode OR customAlias
-  const url = await Url.findOne({
-    $or: [{ shortCode }, { customAlias: shortCode }],
-  });
+const updateUrlStatus = async (urlId, userId, status) => {
+  if (!['active', 'disabled'].includes(status)) {
+    throw new ApiError(400, 'Invalid status. Use "active" or "disabled"');
+  }
+
+  const url = await Url.findById(urlId);
 
   if (!url) {
     throw new ApiError(404, 'URL not found');
   }
 
-  if (url.status !== 'active') {
+  if (url.userId.toString() !== userId.toString()) {
+    throw new ApiError(403, 'Not authorized to update this URL');
+  }
+
+  url.status = status;
+  await url.save();
+
+  return url;
+};
+
+const getUrlByCode = async (shortCode) => {
+  logDebug('getUrlByCode requested', { shortCode });
+
+  // Find by shortCode OR customAlias
+  const url = await Url.findOne({
+    $or: [{ shortCode }, { customAlias: shortCode }],
+  });
+
+  logDebug('getUrlByCode query result', url
+    ? {
+        urlId: url._id,
+        shortCode: url.shortCode,
+        customAlias: url.customAlias,
+        status: url.status,
+        expiresAt: url.expiresAt,
+        originalUrl: url.originalUrl,
+      }
+    : null
+  );
+
+  if (!url) {
+    throw new ApiError(404, 'URL not found');
+  }
+
+  const currentStatus = url.status || 'active';
+
+  if (currentStatus === 'disabled') {
     throw new ApiError(400, 'This URL is no longer active');
   }
 
-  if (url.expiresAt && url.expiresAt < new Date()) {
+  if (url.expiresAt && new Date() > url.expiresAt) {
+    if (currentStatus !== 'expired') {
+      url.status = 'expired';
+      await url.save();
+    }
+
     url.status = 'expired';
-    await url.save();
     throw new ApiError(400, 'This URL has expired');
   }
 
@@ -99,4 +140,5 @@ module.exports = {
   getUserUrls,
   deleteUrl,
   getUrlByCode,
+  updateUrlStatus,
 };

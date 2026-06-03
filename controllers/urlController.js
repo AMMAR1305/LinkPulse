@@ -59,9 +59,30 @@ const getUrlStats = async (req, res, next) => {
   }
 };
 
+const updateStatus = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    const updated = await urlService.updateUrlStatus(req.params.id, req.user._id, status);
+    res.status(200).json({ success: true, data: updated });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getDeviceAnalytics = async (req, res, next) => {
+  try {
+    const data = await analyticsService.getDeviceAnalytics(req.params.id, req.user._id);
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createUrl,
   getUrls,
   removeUrl,
   getUrlStats,
+  updateStatus,
+  getDeviceAnalytics,
 };
