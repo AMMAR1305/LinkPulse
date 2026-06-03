@@ -77,6 +77,22 @@ const getDeviceAnalytics = async (req, res, next) => {
     next(error);
   }
 };
+const getUrlDetails = async (req, res, next) => {
+  try {
+    const url = await urlService.getUrlById(req.params.id, req.user._id);
+    const shortUrl = `${process.env.BASE_URL}/${url.shortCode}`;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        ...url.toObject(),
+        shortUrl,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   createUrl,
@@ -85,4 +101,5 @@ module.exports = {
   getUrlStats,
   updateStatus,
   getDeviceAnalytics,
+  getUrlDetails,
 };

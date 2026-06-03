@@ -1,5 +1,5 @@
 const express = require('express');
-const { createUrl, getUrls, removeUrl, getUrlStats, updateStatus, getDeviceAnalytics } = require('../controllers/urlController');
+const { createUrl, getUrls, removeUrl, getUrlStats, updateStatus, getDeviceAnalytics, getUrlDetails } = require('../controllers/urlController');
 const { validateUrl, validateStatus } = require('../validators/urlValidator');
 const { protect } = require('../middleware/auth');
 
@@ -9,6 +9,7 @@ router.use(protect); // All URL routes are protected
 
 router.post('/', validateUrl, createUrl);
 router.get('/', getUrls);
+router.get('/:id', getUrlDetails);
 router.delete('/:id', removeUrl);
 router.get('/:id/analytics', getUrlStats);
 router.patch('/:id/status', validateStatus, updateStatus);

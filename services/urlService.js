@@ -129,7 +129,20 @@ const getUrlByCode = async (shortCode) => {
     }
 
     url.status = 'expired';
-    throw new ApiError(400, 'This URL has expired');
+  }
+
+  return url;
+};
+
+const getUrlById = async (urlId, userId) => {
+  const url = await Url.findById(urlId);
+
+  if (!url) {
+    throw new ApiError(404, 'URL not found');
+  }
+
+  if (url.userId.toString() !== userId.toString()) {
+    throw new ApiError(403, 'Not authorized to view this URL');
   }
 
   return url;
@@ -141,4 +154,5 @@ module.exports = {
   deleteUrl,
   getUrlByCode,
   updateUrlStatus,
+  getUrlById,
 };

@@ -21,6 +21,18 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     select: false, // Don't return password by default
   },
+  twoFactorEnabled: {
+    type: Boolean,
+    default: false,
+  },
+  twoFactorSecret: {
+    type: String,
+    select: false,
+  },
+  twoFactorTempSecret: {
+    type: String,
+    select: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
