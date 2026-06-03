@@ -466,3 +466,13 @@ All short URLs are generated, stored, redirected, and tracked entirely within th
 **Ammar H**
 
 Built for Hackathon Submission 🚀
+
+---
+
+## 🏆 Hackathon Information
+
+This project is a part of a hackathon run by https://katomaran.com
+
+Project Name: **LinkNova – Smart URL Management & Analytics Platform**
+
+Built as a full-stack URL shortening and analytics solution featuring secure authentication, custom aliases, QR code generation, device analytics, URL expiry, status control, and dashboard insights.
